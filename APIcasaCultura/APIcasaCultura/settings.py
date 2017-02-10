@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'APIcasaCultura.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'agenda',
+        'NAME': 'casacultura',
         'USER': 'user',
         'PASSWORD': '1234',
         'HOST':'localhost',

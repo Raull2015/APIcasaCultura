@@ -64,7 +64,7 @@ class Categoria(models.Model):
         verbose_name_plural = 'categorias'
 
 
-        
+
 
 class Perfil(models.Model):
     nombreArtista = models.CharField(max_length=100)
@@ -102,7 +102,7 @@ class Perfil(models.Model):
 class VisitasPerfil(models.Model):
     cantidad = models.IntegerField(default=0)
     fecha = models.DateField()
-    
+
     class Meta:
         verbose_name = 'visitaperfil'
         verbose_name_plural = 'visitasperfiles'
@@ -142,35 +142,25 @@ class Rol(models.Model):
         verbose_name = 'rol'
         verbose_name_plural = 'roles'
 
-
-
-
-
 #   Una Actividad puede tener muchas imagenes
 class Imagenes(models.Model):
     imagen = models.ImageField(upload_to='imgActividad/', default='imgActividad/default.jpg')
     actividad = models.ForeignKey(Actividad, null=False, blank=False, on_delete=models.CASCADE)
-    
+    objects = models.Manager()
     class Meta:
         verbose_name = 'imagen'
         verbose_name_plural = 'imagenes'
 
-    def __unicode__(self):
-        return self.imagen
 
-    def __str__(self):
-        return self.imagen
-
-
-#   Numero de Visitas que recibe una Actividad 
+#   Numero de Visitas que recibe una Actividad
 class VisitasActividad(models.Model):
     cantidad = models.IntegerField(default=0)
     fecha = models.DateField()
     actividad = models.ForeignKey(Actividad, null=False, blank=False)
-    
+
     class Meta():
         verbose_name = 'visitactividad'
-        verbose_name_plural = 'visitasactividades' 
+        verbose_name_plural = 'visitasactividades'
 
 
 class Comentarios(models.Model):
@@ -203,5 +193,3 @@ class Capsulas(models.Model):
     class Meta:
         verbose_name = 'capsula'
         verbose_name_plural = 'capsulas'
-
-
