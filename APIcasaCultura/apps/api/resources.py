@@ -27,7 +27,7 @@ class CapsulasResource(ModelResource):
     class Meta:
         queryset = Capsulas.objects.all()
         limit = 10
-        fields = ['texto', 'imagen']
+        fields = ['id', 'texto', 'imagen']
         serializer = Serializer(formats=['json'])
         resource_name = 'cap'
 
