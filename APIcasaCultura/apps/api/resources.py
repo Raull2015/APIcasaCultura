@@ -68,7 +68,7 @@ class HomeResource(ActividadResource):
             pass
         return data
     
- class UserResource(ModelResource):
+class UserResource(ModelResource):
 	class Meta:
 		object_class = User
 		queryset = User.objects.all()
