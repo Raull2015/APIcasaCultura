@@ -24,6 +24,10 @@ from apps.api.resources import *
 api_ = Api(api_name='feed')
 api_.register(ActividadResource())
 api_.register(ImagenesResource())
+api_.register(UserResource())
+api_.register(ProfileResource())
+api_.register(LoginResource())
+api_.register(CategoriaResource())
 
 urlpatterns = [
     url(r'^static/(?P<path>.*)$', serve, {
@@ -36,5 +40,5 @@ urlpatterns = [
 
     url(r'^admin/', admin.site.urls),
 
-    url(r'^feed/', include(apiUrls, namespace='home')),
+    url(r'^app/', include(apiUrls)),
 ]

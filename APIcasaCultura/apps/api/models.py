@@ -37,6 +37,7 @@ class Actividad(models.Model):
     #categoria = models.ManyToManyField(Categoria)
     #perfil = models.ManyToManyField(Perfil,db_index=True)
     coordenadas = models.CharField(max_length=100, null=True, blank=True)  #add
+    #perfil = models.ManyToManyField(Perfil)
     objects = models.Manager()
     public = ActividadManager()
 
@@ -62,8 +63,6 @@ class Categoria(models.Model):
     class Meta:
         verbose_name = 'categoria'
         verbose_name_plural = 'categorias'
-
-
 
 
 class Perfil(models.Model):

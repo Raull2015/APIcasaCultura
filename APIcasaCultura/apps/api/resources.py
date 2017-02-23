@@ -17,6 +17,7 @@ class ActividadResource(ModelResource):
         queryset = Actividad.public.all().order_by('-fechaRealizacion')
         limit = 6
         fields = ['nombre', 'lugar', 'fechaRealizacion', 'hora', 'descripcion', 'fechaPublicacion', 'puntuacion', 'coordenadas']
+        authorization = Authorization()
         serializer = Serializer(formats=['json'])
         resource_name = 'act'
 
@@ -24,7 +25,9 @@ class ArtistasResource(ModelResource):
     class Meta:
         queryset = Perfil.public.all()
         limit = 10
-        fields =[]
+        fields =['nombreArtista','nombreReal','imagen','sexo','fechaNacimiento','telefono','']
+        list_allowed_methods = ['get']
+        authorization = Authorization()
         serializer = Serializer(formats=['json'])
         resource_name = 'art'
 
@@ -34,6 +37,7 @@ class ImagenesResource(ModelResource):
         queryset = Imagenes.objects.all()
         fields = ['imagen']
         serializer = Serializer(formats=['json'])
+        authorization = Authorization()
         resource_name = 'img'
 
 class CapsulasResource(ModelResource):
@@ -42,7 +46,17 @@ class CapsulasResource(ModelResource):
         limit = 10
         fields = ['texto', 'imagen']
         serializer = Serializer(formats=['json'])
+        authorization = Authorization()
         resource_name = 'cap'
+
+class CategoriaResource(ModelResource):
+    class Meta:
+        #object_class = Categoria
+        queryset = Categoria.objects.all()
+        resource_name = 'cat'
+        allowed_methods = ['post', 'get']
+        authorization = Authorization()
+        serializer = Serializer(formats=['json'])
 
 class HomeResource(ActividadResource):
     #imagenes = fields.ToManyField(ImagenPortadaResource, 'imagenes_set' ,  related_name='actividad', full=True )
@@ -74,7 +88,7 @@ class HomeResource(ActividadResource):
         except IndexError:
             pass
         return data
-    
+
 class UserResource(ModelResource):
 	class Meta:
 		object_class = User
@@ -85,7 +99,6 @@ class UserResource(ModelResource):
 		include_resource_uri = False
 		authorization = Authorization()
 		serializer = Serializer(formats=['json'])
-
     	def obj_create(self, bundle, request=None, **kwargs):
         	try:
 				bundle = super(CreateUserResource, self).obj_create(bundle)
@@ -96,21 +109,8 @@ class UserResource(ModelResource):
 
     		return bundle
 
-
-class ProfileResource(ModelResource):
-	user = fields.OneToOneField(UserResource, 'user')
-	#categoria = fields.ManyToManyField(CategoriaResource,'categoria')
-    #actividad = fields.ManyToManyField(ActivdadResource, 'actividad')
-
-	class Meta:
-		queryset = Perfil.objects.all()
-		allowed_methods = ['post', 'get']
-		resource_name = "perfil"
-		authorization = Authorization()
-		serializer = Serializer(formats=['json'])
-
 class LoginResource(ModelResource):
-	class Meta:
+    class Meta:
 		allowed_methods = ['get']
 		resource_name = 'login'
 		include_resource_uri = False
@@ -120,5 +120,17 @@ class LoginResource(ModelResource):
 		authorization = Authorization()
 		serializer = Serializer(formats=['json'])
 
-	def obj_get_list(self, bundle, **kwargs):
-		return [bundle.request.user]
+    def obj_get_list(self, bundle, **kwargs):
+        return [bundle.request.user]
+
+class ProfileResource(ModelResource):
+    user = fields.OneToOneField(UserResource, 'user')
+    #actividad = fields.ManyToManyField(ActivdadResource, 'actividad')
+    #categoria = fields.ManyToManyField(CategoriaResource,'categoria')
+    class Meta:
+        queryset = Perfil.objects.all()
+        allowed_methods = ['post', 'get']
+        limit = 10
+        authorization = Authorization()
+        serializer = Serializer(formats=['json'])
+        resource_name = 'per'
