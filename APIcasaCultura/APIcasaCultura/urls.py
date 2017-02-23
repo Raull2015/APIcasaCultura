@@ -15,15 +15,26 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.views.static import serve
+from django.conf import settings
+from tastypie.api import Api
 from apps.api import urls as apiUrls
+from apps.api.resources import *
+
+api_ = Api(api_name='feed')
+api_.register(ActividadResource())
+api_.register(ImagenesResource())
 
 urlpatterns = [
-#    url(r'^static/(?P<path>.*)$', serve, {
-#        'document_root': settings.STATIC_ROOT,
-#    }),
-#    url(r'^media/(?P<path>.*)$', serve, {
-#        'document_root': settings.MEDIA_ROOT,
-#    }),
+    url(r'^static/(?P<path>.*)$', serve, {
+        'document_root': settings.STATIC_ROOT,
+    }),
+    url(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
+    url(r'^', include(api_.urls)),
+
     url(r'^admin/', admin.site.urls),
+
     url(r'^feed/', include(apiUrls, namespace='home')),
 ]

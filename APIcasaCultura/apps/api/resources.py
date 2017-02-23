@@ -6,20 +6,27 @@ from datetime import date
 from models import *
 
 class ActividadResource(ModelResource):
-    #imagenes = fields.ToManyField('apps.api.resources.ImagenesResource', 'imagenes_set' ,  related_name='actividad', full=True )
+    imagenes = fields.ToManyField('apps.api.resources.ImagenesResource', 'imagenes_set' ,  related_name='actividad' )
     class Meta:
         queryset = Actividad.public.all().order_by('-fechaRealizacion')
         limit = 6
-        fields = ['nombre', 'lugar', 'fechaRealizacion', 'hora']
+        fields = ['nombre', 'lugar', 'fechaRealizacion', 'hora', 'descripcion', 'fechaPublicacion', 'puntuacion', 'coordenadas']
         serializer = Serializer(formats=['json'])
         resource_name = 'act'
 
-class ImagenPortadaResource(ModelResource):
-    #actividad = fields.ToOneField(ActividadResource, 'actividad').use_in
+class ArtistasResource(ModelResource):
+    class Meta:
+        queryset = Perfil.public.all()
+        limit = 10
+        fields =[]
+        serializer = Serializer(formats=['json'])
+        resource_name = 'art'
+
+class ImagenesResource(ModelResource):
+    actividad = fields.ToOneField(ActividadResource, 'actividad')
     class Meta:
         queryset = Imagenes.objects.all()
         fields = ['imagen']
-        limit = 1
         serializer = Serializer(formats=['json'])
         resource_name = 'img'
 
@@ -27,7 +34,7 @@ class CapsulasResource(ModelResource):
     class Meta:
         queryset = Capsulas.objects.all()
         limit = 10
-        fields = ['id', 'texto', 'imagen']
+        fields = ['texto', 'imagen']
         serializer = Serializer(formats=['json'])
         resource_name = 'cap'
 
@@ -46,7 +53,7 @@ class HomeResource(ActividadResource):
         bundle.data['imagen'] = None
         try:
             img = Imagenes.objects.filter(actividad=int(bundle.data['id']))[0]
-            bundle.data['imagen'] = img.imagen
+            bundle.data['imagen'] = '/media/' + str(img.imagen)
         except IndexError:
             pass
         return bundle
