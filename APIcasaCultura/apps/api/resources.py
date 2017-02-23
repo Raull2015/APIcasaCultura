@@ -1,8 +1,14 @@
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+
 from tastypie.resources import ModelResource, Resource
 from tastypie.serializers import Serializer
-from tastypie.authorization import DjangoAuthorization, ReadOnlyAuthorization
+from tastypie.authorization import DjangoAuthorization, ReadOnlyAuthorization, Authorization
+from tastypie.authentication import BasicAuthentication
+from tastypie.exceptions import BadRequest
 from tastypie import fields
 from datetime import date
+
 from models import *
 
 class ActividadResource(ModelResource):
@@ -68,3 +74,51 @@ class HomeResource(ActividadResource):
         except IndexError:
             pass
         return data
+    
+class UserResource(ModelResource):
+	class Meta:
+		object_class = User
+		queryset = User.objects.all()
+		resource_name = "user"
+		fields = ['username']
+		allowed_methods = ['post', 'get']
+		include_resource_uri = False
+		authorization = Authorization()
+		serializer = Serializer(formats=['json'])
+
+    	def obj_create(self, bundle, request=None, **kwargs):
+        	try:
+				bundle = super(CreateUserResource, self).obj_create(bundle)
+				bundle.obj.set_password(bundle.data.get('password'))
+				bundle.obj.save()
+        	except IntegrityError:
+				raise BadRequest('El usuario ya existe')
+
+    		return bundle
+
+
+class ProfileResource(ModelResource):
+	user = fields.OneToOneField(UserResource, 'user')
+	#categoria = fields.ManyToManyField(CategoriaResource,'categoria')
+    #actividad = fields.ManyToManyField(ActivdadResource, 'actividad')
+
+	class Meta:
+		queryset = Perfil.objects.all()
+		allowed_methods = ['post', 'get']
+		resource_name = "perfil"
+		authorization = Authorization()
+		serializer = Serializer(formats=['json'])
+
+class LoginResource(ModelResource):
+	class Meta:
+		allowed_methods = ['get']
+		resource_name = 'login'
+		include_resource_uri = False
+		object_class = User
+		excludes = ['password']
+		authentication = BasicAuthentication()
+		authorization = Authorization()
+		serializer = Serializer(formats=['json'])
+
+	def obj_get_list(self, bundle, **kwargs):
+		return [bundle.request.user]
